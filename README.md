@@ -208,6 +208,29 @@ http://localhost:8080
 
 You will be automatically redirected to the products list page.
 
+## Using Upstash Redis Cloud (Dev Profile)
+
+The application supports using **Upstash Redis Cloud** for development instead of local Docker Redis.
+
+### Quick Setup:
+
+1. Get your Upstash credentials from: https://console.upstash.com
+2. Update `src/main/resources/application-dev.properties` with your credentials
+3. Run with dev profile:
+
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+```
+
+📖 **For detailed setup instructions, see [UPSTASH_SETUP.md](UPSTASH_SETUP.md)**
+
+### Profile Comparison:
+
+| Profile     | Redis Location          | Command                                                 |
+|-------------|-------------------------|---------------------------------------------------------|
+| **default** | Docker (localhost:6379) | `./mvnw spring-boot:run`                                |
+| **dev**     | Upstash Cloud (TLS)     | `./mvnw spring-boot:run -Dspring-boot.run.profiles=dev` |
+
 ## Configuration
 
 ### Application Properties
