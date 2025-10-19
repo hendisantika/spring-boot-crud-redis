@@ -8,12 +8,13 @@ responsive user interface.
 
 - **Full CRUD Operations**: Create, Read, Update, and Delete products
 - **Redis Integration**: Fast, in-memory data storage using Redis
+- **Redis UI Management**: Includes RedisInsight and Redis Commander for visual data management
 - **Search Functionality**: Search products by name with real-time filtering
 - **Category Management**: Organize products by categories
 - **Form Validation**: Client-side and server-side validation
 - **SweetAlert2 Notifications**: Beautiful, responsive alerts and confirmations
 - **Responsive UI**: Modern Bootstrap 5 interface with gradient design
-- **Docker Support**: Easy Redis deployment using Docker Compose
+- **Docker Support**: Easy Redis deployment using Docker Compose with UI tools
 - **Stock Management**: Visual indicators for product quantity (In Stock, Low Stock, Out of Stock)
 
 ## Technologies Used
@@ -43,6 +44,8 @@ responsive user interface.
 ### DevOps
 
 - **Docker & Docker Compose** - Containerization
+- **RedisInsight** - Official Redis GUI for data visualization and management
+- **Redis Commander** - Lightweight web-based Redis management tool
 - **Maven** - Build and dependency management
 
 ## Prerequisites
@@ -101,28 +104,65 @@ git clone https://github.com/hendisantika/spring-boot-crud-redis.git
 cd spring-boot-crud-redis
 ```
 
-### 2. Start Redis Container
+### 2. Start Redis Containers
 
-The application uses Docker Compose to run Redis. Start the Redis container:
+The application uses Docker Compose to run Redis along with management UI tools. Start all containers:
 
 ```bash
 docker-compose up -d
 ```
 
-This will:
+This will start:
 
-- Pull the Redis 7 Alpine image
-- Start Redis on port 6379
-- Create a persistent volume for data storage
-- Enable Redis append-only file (AOF) persistence
+**Redis Server:**
 
-Verify Redis is running:
+- Image: Redis 7 Alpine
+- Port: 6379
+- Container: `spring-boot-redis`
+- Features: AOF persistence enabled
+
+**RedisInsight (Official Redis GUI):**
+
+- Port: 5540
+- Container: `spring-boot-redis-insight`
+- Access: http://localhost:5540
+- Features: Modern web-based Redis management interface with data visualization, query builder, and performance
+  monitoring
+
+**Redis Commander (Alternative Web UI):**
+
+- Port: 8081
+- Container: `spring-boot-redis-commander`
+- Access: http://localhost:8081
+- Features: Lightweight web-based Redis management tool
+
+Verify all containers are running:
 
 ```bash
 docker ps
 ```
 
-You should see a container named `spring-boot-redis` running.
+You should see three containers: `spring-boot-redis`, `spring-boot-redis-insight`, and `spring-boot-redis-commander`
+running.
+
+### Accessing Redis UI Tools
+
+**RedisInsight** (Recommended):
+
+1. Open http://localhost:5540 in your browser
+2. Click "Add Redis Database"
+3. Enter:
+    - Host: `redis`
+    - Port: `6379`
+    - Name: `Spring Boot Redis`
+4. Click "Add Database"
+5. You can now browse keys, run commands, and monitor performance
+
+**Redis Commander**:
+
+1. Open http://localhost:8081 in your browser
+2. The connection is pre-configured
+3. You can immediately browse and manage Redis data
 
 ### 3. Build the Application
 
@@ -366,28 +406,81 @@ logging.level.id.my.hendisantika.crudredis=DEBUG
 
 ## Docker Commands
 
-### Start Redis Container
+### Start All Containers (Redis + UI Tools)
 
 ```bash
 docker-compose up -d
 ```
 
-### Stop Redis Container
+### Stop All Containers
 
 ```bash
 docker-compose down
 ```
 
-### View Redis Logs
+### Start/Stop Individual Services
+
+Start only Redis:
 
 ```bash
+docker-compose up -d redis
+```
+
+Start only RedisInsight:
+
+```bash
+docker-compose up -d redis-insight
+```
+
+Start only Redis Commander:
+
+```bash
+docker-compose up -d redis-commander
+```
+
+### View Logs
+
+View Redis logs:
+```bash
 docker-compose logs -f redis
+```
+
+View RedisInsight logs:
+
+```bash
+docker-compose logs -f redis-insight
+```
+
+View Redis Commander logs:
+
+```bash
+docker-compose logs -f redis-commander
+```
+
+View all logs:
+
+```bash
+docker-compose logs -f
 ```
 
 ### Connect to Redis CLI
 
 ```bash
 docker exec -it spring-boot-redis redis-cli
+```
+
+### Restart Services
+
+Restart all services:
+
+```bash
+docker-compose restart
+```
+
+Restart only Redis:
+
+```bash
+docker-compose restart redis
 ```
 
 ### Common Redis CLI Commands
