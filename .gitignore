@@ -3,6 +3,8 @@ target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+redis-data
+redisinsight-data
 
 ### STS ###
 .apt_generated
