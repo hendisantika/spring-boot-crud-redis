@@ -5,6 +5,7 @@ target/
 !**/src/test/**/target/
 redis-data
 redisinsight-data
+.env
 
 ### Application Properties with Credentials ###
 # Uncomment the line below if you add real Upstash credentials to application-dev.properties
