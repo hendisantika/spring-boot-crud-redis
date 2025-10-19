@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" th:replace="~{layout :: layout}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Products List</title>
+</head>
+<body>
+<div th:fragment="content">
+    <div class="card">
+        <div class="card-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="mb-0">
+                        <i class="bi bi-box-seam"></i> Products List
+                    </h3>
+                </div>
+                <div class="col-auto">
+                    <a class="btn btn-light" href="/products/new">
+                        <i class="bi bi-plus-circle"></i> Add New Product
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <!-- Search Form -->
+            <form action="/products" class="mb-4" method="get">
+                <div class="input-group">
+                    <input class="form-control" name="search" placeholder="Search products by name..."
+                           th:value="${search}"
+                           type="text">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="bi bi-search"></i> Search
+                    </button>
+                    <a class="btn btn-secondary" href="/products" th:if="${search}">
+                        <i class="bi bi-x-circle"></i> Clear
+                    </a>
+                </div>
+            </form>
+
+            <!-- Products Table -->
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Category</th>
+                        <th class="text-end">Price</th>
+                        <th class="text-center">Quantity</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${products.isEmpty()}">
+                        <td class="text-center text-muted py-5" colspan="6">
+                            <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                            <p class="mt-3">No products found</p>
+                            <a class="btn btn-primary" href="/products/new">
+                                <i class="bi bi-plus-circle"></i> Add Your First Product
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:each="product : ${products}">
+                        <td>
+                            <strong th:text="${product.name}">Product Name</strong>
+                        </td>
+                        <td th:text="${product.description}">Description</td>
+                        <td>
+                            <span class="badge bg-info" th:text="${product.category}">Category</span>
+                        </td>
+                        <td class="text-end">
+                            <strong th:text="${'$' + #numbers.formatDecimal(product.price, 1, 2)}">$0.00</strong>
+                        </td>
+                        <td class="text-center">
+                                    <span class="badge"
+                                          th:classappend="${product.quantity > 10 ? 'bg-success' : (product.quantity > 0 ? 'bg-warning' : 'bg-danger')}"
+                                          th:text="${product.quantity}">0</span>
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group" role="group">
+                                <a class="btn btn-sm btn-info"
+                                   th:href="@{/products/view/{id}(id=${product.id})}"
+                                   title="View">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a class="btn btn-sm btn-warning"
+                                   th:href="@{/products/edit/{id}(id=${product.id})}"
+                                   title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button class="btn btn-sm btn-danger delete-btn"
+                                        th:data-id="${product.id}"
+                                        th:data-name="${product.name}"
+                                        title="Delete"
+                                        type="button">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Summary -->
+            <div class="mt-3" th:if="${!products.isEmpty()}">
+                <p class="text-muted">
+                    <i class="bi bi-info-circle"></i>
+                    Total Products: <strong th:text="${products.size()}">0</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="scripts">
+    <script>
+        // Delete confirmation with SweetAlert2
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const productId = this.getAttribute('data-id');
+                const productName = this.getAttribute('data-name');
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: `Do you want to delete "${productName}"?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ef476f',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = `/products/delete/${productId}`;
+                    }
+                });
+            });
+        });
+    </script>
+</div>
+</body>
+</html>
