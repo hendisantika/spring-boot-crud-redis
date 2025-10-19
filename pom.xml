@@ -12,19 +12,40 @@
     <artifactId>crud-redis</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>spring-boot-crud-redis</name>
-    <description>spring-boot-crud-redis</description>
-    <url/>
+    <description>Spring Boot CRUD Application with Redis, Thymeleaf, and SweetAlert2 - A modern product management
+        system
+    </description>
+    <url>https://github.com/hendisantika/spring-boot-crud-redis</url>
     <licenses>
-        <license/>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+            <distribution>repo</distribution>
+        </license>
     </licenses>
     <developers>
-        <developer/>
+        <developer>
+            <id>hendisantika</id>
+            <name>Hendi Santika</name>
+            <email>hendisantika@yahoo.co.id</email>
+            <url>https://s.id/hendisantika</url>
+            <organization>hendisantika</organization>
+            <organizationUrl>https://github.com/hendisantika</organizationUrl>
+            <roles>
+                <role>developer</role>
+                <role>architect</role>
+            </roles>
+            <timezone>Asia/Jakarta</timezone>
+            <properties>
+                <telegram>@hendisantika34</telegram>
+            </properties>
+        </developer>
     </developers>
     <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
+        <connection>scm:git:git://github.com/hendisantika/spring-boot-crud-redis.git</connection>
+        <developerConnection>scm:git:ssh://github.com/hendisantika/spring-boot-crud-redis.git</developerConnection>
+        <tag>HEAD</tag>
+        <url>https://github.com/hendisantika/spring-boot-crud-redis</url>
     </scm>
     <properties>
         <java.version>25</java.version>
@@ -32,7 +53,23 @@
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
         </dependency>
 
         <dependency>
