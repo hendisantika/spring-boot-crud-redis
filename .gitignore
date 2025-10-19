@@ -6,6 +6,10 @@ target/
 redis-data
 redisinsight-data
 
+### Application Properties with Credentials ###
+# Uncomment the line below if you add real Upstash credentials to application-dev.properties
+# src/main/resources/application-dev.properties
+
 ### STS ###
 .apt_generated
 .classpath

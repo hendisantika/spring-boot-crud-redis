@@ -4,8 +4,6 @@ import id.my.hendisantika.crudredis.model.Product;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 /**
  * Created by IntelliJ IDEA.
  * Project : spring-boot-crud-redis
@@ -20,11 +18,11 @@ import java.util.List;
 
 /**
  * Product repository for Redis operations
+ * Note: Redis doesn't support complex query derivation like JPA.
+ * For searching/filtering, use service layer with manual filtering.
  */
 @Repository
 public interface ProductRepository extends CrudRepository<Product, String> {
-
-    List<Product> findByNameContainingIgnoreCase(String name);
-
-    List<Product> findByCategory(String category);
+    // Basic CRUD operations only
+    // Search functionality implemented in service layer
 }

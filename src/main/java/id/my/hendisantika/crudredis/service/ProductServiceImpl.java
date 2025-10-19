@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Created by IntelliJ IDEA.
@@ -67,13 +69,28 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> searchProductsByName(String name) {
         log.info("Searching products by name: {}", name);
-        return productRepository.findByNameContainingIgnoreCase(name);
+        if (name == null || name.trim().isEmpty()) {
+            return getAllProducts();
+        }
+
+        // Redis doesn't support CONTAINING queries, so we filter in-memory
+        String searchTerm = name.toLowerCase().trim();
+        return StreamSupport.stream(productRepository.findAll().spliterator(), false)
+                .filter(product -> product.getName().toLowerCase().contains(searchTerm))
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<Product> getProductsByCategory(String category) {
         log.info("Fetching products by category: {}", category);
-        return productRepository.findByCategory(category);
+        if (category == null || category.trim().isEmpty()) {
+            return getAllProducts();
+        }
+
+        // Filter products by category in-memory
+        return StreamSupport.stream(productRepository.findAll().spliterator(), false)
+                .filter(product -> category.equalsIgnoreCase(product.getCategory()))
+                .collect(Collectors.toList());
     }
 
     @Override

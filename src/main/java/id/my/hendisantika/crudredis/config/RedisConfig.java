@@ -5,11 +5,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.util.StringUtils;
 
 /**
  * Created by IntelliJ IDEA.
@@ -36,12 +38,41 @@ public class RedisConfig {
     @Value("${spring.data.redis.port}")
     private int redisPort;
 
+    @Value("${spring.data.redis.username:#{null}}")
+    private String redisUsername;
+
+    @Value("${spring.data.redis.password:#{null}}")
+    private String redisPassword;
+
+    @Value("${spring.data.redis.ssl.enabled:false}")
+    private boolean sslEnabled;
+
     @Bean
     public JedisConnectionFactory jedisConnectionFactory() {
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
         redisStandaloneConfiguration.setHostName(redisHost);
         redisStandaloneConfiguration.setPort(redisPort);
-        return new JedisConnectionFactory(redisStandaloneConfiguration);
+
+        // Set username if provided (for Upstash Redis 6+ with ACL)
+        if (StringUtils.hasText(redisUsername)) {
+            redisStandaloneConfiguration.setUsername(redisUsername);
+        }
+
+        // Set password if provided (for Upstash or secured Redis)
+        if (StringUtils.hasText(redisPassword)) {
+            redisStandaloneConfiguration.setPassword(redisPassword);
+        }
+
+        // Build JedisClientConfiguration with SSL support if enabled
+        JedisClientConfiguration.JedisClientConfigurationBuilder builder = JedisClientConfiguration.builder();
+
+        if (sslEnabled) {
+            builder.useSsl();
+        }
+
+        JedisClientConfiguration jedisClientConfiguration = builder.build();
+
+        return new JedisConnectionFactory(redisStandaloneConfiguration, jedisClientConfiguration);
     }
 
     @Bean
