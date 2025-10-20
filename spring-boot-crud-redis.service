@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=simple
 WorkingDirectory=/home/destroyer/spring-boot-crud-redis
-ExecStart=/home/destroyer/spring-boot-crud-redis/start-app.sh
+ExecStart=/home/deployer/spring-boot-crud-redis/start-app.sh
 SuccessExitStatus=143
 Restart=always
 RestartSec=10
