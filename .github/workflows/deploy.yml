@@ -30,7 +30,7 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
-          source: "target/crud-redis-0.0.1-SNAPSHOT.jar,spring-boot-crud-redis.service,start-app.sh,nginx/"
+          source: "target/crud-redis-0.0.1.jar,spring-boot-crud-redis.service,start-app.sh,nginx/"
           target: "/home/${{ secrets.SERVER_USERNAME }}/spring-boot-crud-redis"
           strip_components: 0
 
