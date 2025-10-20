@@ -35,7 +35,7 @@ instructions.
 6. `UPSTASH_USERNAME` = `default`
 7. `UPSTASH_PASSWORD` = `UPSTASH_PASSWORD`
 
-## 📋 Deployment Flow
+## 📋 Automated Deployment Flow
 
 ```
 1. GitHub Actions triggers on push to main
@@ -45,18 +45,32 @@ instructions.
 3. Transfer files to server via SCP:
    - crud-redis-0.0.1-SNAPSHOT.jar
    - spring-boot-crud-redis.service
+   - nginx/redis-demo.jvm.my.id.conf
    ↓
-4. SSH into server and:
+4. Deploy Application:
    - Create .env file from GitHub Secrets
-   - Set .env permissions (600)
-   - Copy systemd service
-   - Reload systemd
-   - Start application
+   - Update systemd service
+   - Start Spring Boot application
+   - Verify application status
    ↓
-5. Application runs with:
-   - Profile: dev
-   - Redis: Upstash Cloud (TLS enabled)
-   - Port: 8080
+5. Setup Nginx (NEW!):
+   - Install Nginx (if not present)
+   - Update configuration
+   - Test configuration
+   - Reload Nginx
+   - Configure firewall
+   ↓
+6. Verify Domain (NEW!):
+   - ✓ Test Spring Boot (localhost:8080)
+   - ✓ Test Nginx proxy (localhost:80)
+   - ✓ Test server IP (103.125.181.190)
+   - ✓ Test HTTP domain
+   - ✓ Test HTTPS domain
+   ↓
+7. Deployment Complete! ✅
+   Application accessible at:
+   - http://103.125.181.190
+   - https://redis-demo.jvm.my.id
 ```
 
 ## 🎯 Key Benefits
@@ -116,12 +130,17 @@ git push origin main
 
 GitHub Actions will automatically:
 
-1. Build your application
-2. Deploy to 103.125.181.190
-3. Create `.env` with Upstash credentials
-4. Start the application
+1. ✅ Build your application
+2. ✅ Deploy to 103.125.181.190
+3. ✅ Create `.env` with Upstash credentials
+4. ✅ Start the application
+5. ✅ **Setup/update Nginx** (NEW!)
+6. ✅ **Verify domain is working** (NEW!)
 
-Access at: **http://103.125.181.190:8080**
+Access at:
+
+- **Direct**: http://103.125.181.190:8080
+- **With Nginx**: https://redis-demo.jvm.my.id (recommended)
 
 ## 🔍 Verify Deployment
 
@@ -140,12 +159,51 @@ sudo systemctl status spring-boot-crud-redis
 sudo journalctl -u spring-boot-crud-redis -f
 ```
 
+## 🌐 Nginx Setup (Optional but Recommended)
+
+For production deployment with HTTPS:
+
+1. Configure DNS: `redis-demo.jvm.my.id` → `103.125.181.190`
+2. Run setup script: `./setup-nginx.sh`
+3. Access via: https://redis-demo.jvm.my.id
+
+See **NGINX_SETUP.md** for details.
+
+## ✨ New Features
+
+### Automated Nginx Setup
+
+The deployment now **automatically**:
+
+- Installs Nginx if not present
+- Updates Nginx configuration
+- Tests and reloads Nginx
+- Configures firewall
+
+### Automated Domain Verification
+
+After each deployment, the workflow **verifies**:
+
+- ✓ Spring Boot backend is running
+- ✓ Nginx is serving requests
+- ✓ Server is accessible via IP
+- ✓ Domain is working (if Cloudflare configured)
+- ✓ HTTPS is working (if Cloudflare configured)
+
+See **DEPLOYMENT_VERIFICATION.md** for details.
+
 ## 📚 Related Documentation
 
+- **DEPLOYMENT_VERIFICATION.md** - **NEW!** Automated verification details
 - **GITHUB_SECRETS.md** - Detailed secret configuration guide
+- **SSH_KEY_SETUP_GUIDE.md** - SSH key authentication setup
+- **CLOUDFLARE_SETUP.md** - Cloudflare configuration guide
+- **NGINX_SETUP.md** - Nginx reverse proxy with SSL
+- **NGINX_QUICK_START.md** - Quick nginx setup guide
 - **DEPLOYMENT.md** - Complete deployment guide
 - **UPSTASH_DEPLOYMENT.md** - How Upstash credentials work
 - **server-setup.sh** - Server preparation script
+- **setup-nginx.sh** - Nginx setup script
 
 ---
 

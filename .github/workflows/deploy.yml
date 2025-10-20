@@ -23,14 +23,14 @@ jobs:
       - name: Build with Maven
         run: mvn clean package -DskipTests
 
-      - name: Deploy JAR and Service to Server
+      - name: Deploy JAR, Service, and Nginx Config to Server
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
-          source: "target/crud-redis-0.0.1-SNAPSHOT.jar,spring-boot-crud-redis.service"
+          source: "target/crud-redis-0.0.1-SNAPSHOT.jar,spring-boot-crud-redis.service,nginx/"
           target: "/home/${{ secrets.SERVER_USERNAME }}/spring-boot-crud-redis"
           strip_components: 0
 
@@ -72,3 +72,124 @@ jobs:
 
             # Show recent logs
             sudo journalctl -u spring-boot-crud-redis -n 20 --no-pager
+
+      - name: Setup and verify Nginx
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: 22
+          script: |
+            cd /home/${{ secrets.SERVER_USERNAME }}/spring-boot-crud-redis
+
+            # Install Nginx if not present
+            if ! command -v nginx &> /dev/null; then
+              echo "Installing Nginx..."
+              sudo apt update
+              sudo apt install -y nginx
+              sudo systemctl enable nginx
+            fi
+
+            # Update Nginx configuration
+            echo "Updating Nginx configuration..."
+            sudo cp nginx/redis-demo.jvm.my.id.conf /etc/nginx/sites-available/redis-demo.jvm.my.id.conf
+
+            # Enable site if not already enabled
+            sudo ln -sf /etc/nginx/sites-available/redis-demo.jvm.my.id.conf /etc/nginx/sites-enabled/redis-demo.jvm.my.id.conf
+
+            # Remove default nginx site
+            sudo rm -f /etc/nginx/sites-enabled/default
+
+            # Test Nginx configuration
+            echo "Testing Nginx configuration..."
+            sudo nginx -t
+
+            # Reload Nginx
+            echo "Reloading Nginx..."
+            sudo systemctl reload nginx
+
+            # Ensure Nginx is running
+            sudo systemctl start nginx || true
+
+            # Configure firewall for HTTP
+            if command -v ufw &> /dev/null; then
+              sudo ufw allow 80/tcp || true
+            fi
+
+            # Check Nginx status
+            sudo systemctl status nginx --no-pager
+
+      - name: Verify domain is serving requests
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: 22
+          script: |
+            echo "============================================"
+            echo "Testing Application Endpoints"
+            echo "============================================"
+
+            # Test local backend directly
+            echo ""
+            echo "1. Testing Spring Boot backend (localhost:8080)..."
+            if curl -f -s -o /dev/null -w "HTTP Status: %{http_code}\n" http://localhost:8080; then
+              echo "✓ Spring Boot backend is responding"
+            else
+              echo "✗ Spring Boot backend is NOT responding"
+              exit 1
+            fi
+
+            # Test Nginx locally
+            echo ""
+            echo "2. Testing Nginx (localhost:80)..."
+            if curl -f -s -o /dev/null -w "HTTP Status: %{http_code}\n" http://localhost; then
+              echo "✓ Nginx is serving requests"
+            else
+              echo "✗ Nginx is NOT responding"
+              exit 1
+            fi
+
+            # Test via server IP
+            echo ""
+            echo "3. Testing via server IP (103.125.181.190)..."
+            if curl -f -s -o /dev/null -w "HTTP Status: %{http_code}\n" http://103.125.181.190; then
+              echo "✓ Server is accessible via IP"
+            else
+              echo "✗ Server is NOT accessible via IP"
+              exit 1
+            fi
+
+            # Test domain (if DNS is configured)
+            echo ""
+            echo "4. Testing domain (redis-demo.jvm.my.id)..."
+            if curl -f -s -o /dev/null -w "HTTP Status: %{http_code}\n" http://redis-demo.jvm.my.id 2>/dev/null; then
+              echo "✓ Domain is serving requests"
+            else
+              echo "⚠ Domain might not be configured yet (this is OK if Cloudflare DNS is not set)"
+              echo "  Configure Cloudflare DNS: redis-demo.jvm.my.id → 103.125.181.190"
+            fi
+
+            # Test HTTPS domain (if Cloudflare is configured)
+            echo ""
+            echo "5. Testing HTTPS domain (https://redis-demo.jvm.my.id)..."
+            if curl -f -s -o /dev/null -w "HTTP Status: %{http_code}\n" https://redis-demo.jvm.my.id 2>/dev/null; then
+              echo "✓ HTTPS domain is working (Cloudflare is configured)"
+            else
+              echo "⚠ HTTPS domain not accessible yet"
+              echo "  1. Configure Cloudflare DNS"
+              echo "  2. Set SSL/TLS mode to 'Full'"
+              echo "  3. Wait a few minutes for SSL provisioning"
+            fi
+
+            echo ""
+            echo "============================================"
+            echo "✓ Deployment Verification Complete"
+            echo "============================================"
+            echo ""
+            echo "Access your application at:"
+            echo "  - Direct IP:    http://103.125.181.190"
+            echo "  - With domain:  https://redis-demo.jvm.my.id (after Cloudflare setup)"
+            echo ""
