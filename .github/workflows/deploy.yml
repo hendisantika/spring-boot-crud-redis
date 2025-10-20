@@ -66,12 +66,17 @@ jobs:
             sudo systemctl enable spring-boot-crud-redis
             sudo systemctl start spring-boot-crud-redis
 
+            # Wait for application to start (Spring Boot needs time to initialize)
+            echo "Waiting for Spring Boot to start..."
+            sleep 15
+
             # Check status
-            sleep 5
             sudo systemctl status spring-boot-crud-redis --no-pager
 
             # Show recent logs
-            sudo journalctl -u spring-boot-crud-redis -n 20 --no-pager
+            echo ""
+            echo "Application logs:"
+            sudo journalctl -u spring-boot-crud-redis -n 30 --no-pager
 
       - name: Setup and verify Nginx
         uses: appleboy/ssh-action@v1.2.0
@@ -132,13 +137,56 @@ jobs:
             echo "Testing Application Endpoints"
             echo "============================================"
 
-            # Test local backend directly
+            # Wait for Spring Boot to fully start
+            echo "Waiting for Spring Boot to fully initialize..."
+            sleep 10
+
+            # Check if Spring Boot is actually running
+            echo ""
+            echo "Checking Spring Boot status..."
+            if ! sudo systemctl is-active --quiet spring-boot-crud-redis; then
+              echo "✗ Spring Boot service is not active!"
+              echo ""
+              echo "Service status:"
+              sudo systemctl status spring-boot-crud-redis --no-pager
+              echo ""
+              echo "Recent logs:"
+              sudo journalctl -u spring-boot-crud-redis -n 50 --no-pager
+              exit 1
+            fi
+
+            # Test local backend directly with retries
             echo ""
             echo "1. Testing Spring Boot backend (localhost:8080)..."
-            if curl -f -s -o /dev/null -w "HTTP Status: %{http_code}\n" http://localhost:8080; then
-              echo "✓ Spring Boot backend is responding"
-            else
-              echo "✗ Spring Boot backend is NOT responding"
+            MAX_RETRIES=6
+            RETRY_COUNT=0
+            SUCCESS=0
+
+            while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+              HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080 2>/dev/null || echo "000")
+
+              if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "302" ]; then
+                echo "✓ Spring Boot backend is responding (HTTP $HTTP_CODE)"
+                SUCCESS=1
+                break
+              else
+                RETRY_COUNT=$((RETRY_COUNT + 1))
+                if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                  echo "  Attempt $RETRY_COUNT/$MAX_RETRIES: HTTP $HTTP_CODE - Retrying in 5 seconds..."
+                  sleep 5
+                fi
+              fi
+            done
+
+            if [ $SUCCESS -eq 0 ]; then
+              echo "✗ Spring Boot backend is NOT responding after $MAX_RETRIES attempts"
+              echo ""
+              echo "Diagnostics:"
+              echo "- Checking if port 8080 is listening:"
+              sudo netstat -tlnp | grep :8080 || echo "  Port 8080 is NOT listening"
+              echo ""
+              echo "- Recent application logs:"
+              sudo journalctl -u spring-boot-crud-redis -n 50 --no-pager
               exit 1
             fi
 
