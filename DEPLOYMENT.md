@@ -42,7 +42,7 @@ The setup script will:
 
 - Use SDKMAN to install/configure Java 25
 - Verify Docker and Docker Compose installation
-- Create application directory at `/home/deployer/spring-boot-crud-redis`
+- Create application directory at `/home/destroyer/spring-boot-crud-redis`
 - Configure firewall rules (if UFW is installed)
 - Ensure Docker service is running
 - Add user to docker group (if needed)
@@ -240,7 +240,7 @@ Common issues:
 
 - **Port 8080 in use**: Check if another service is using port 8080
 - **Redis connection failed**: Verify .env file has correct Upstash credentials
-- **Permission issues**: Ensure deployer user has proper permissions
+- **Permission issues**: Ensure destroyer user has proper permissions
 - **SSL/TLS errors**: Ensure Upstash Redis TLS is properly configured
 
 ### Firewall Issues
@@ -262,16 +262,16 @@ sudo ufw reload
 
 ```bash
 # Check .env file has correct credentials
-cat /home/deployer/spring-boot-crud-redis/.env
+cat /home/destroyer/spring-boot-crud-redis/.env
 
 # Verify Upstash Redis credentials match
 # UPSTASH_ENDPOINT should be: living-muskrat-23212.upstash.io
 # UPSTASH_PORT should be: 6379
 # UPSTASH_USERNAME should be: default
-# UPSTASH_PASSWORD should match your Upstash account
+# UPSTASH_PASSWORD should be: AVqsAAIjcDE2OWRkMGRhYmM4MDk0OWRlOWM4OWE1MmIzZWE5MzRiNXAxMA
 
 # Test connection to Upstash Redis
-redis-cli -u rediss://default:YOUR_PASSWORD@living-muskrat-23212.upstash.io:6379 ping
+redis-cli -u rediss://default:AVqsAAIjcDE2OWRkMGRhYmM4MDk0OWRlOWM4OWE1MmIzZWE5MzRiNXAxMA@living-muskrat-23212.upstash.io:6379 ping
 
 # Check application logs for Redis errors
 sudo journalctl -u spring-boot-crud-redis -f | grep -i redis
@@ -347,7 +347,7 @@ For production deployment, consider:
 ## File Structure on Server
 
 ```
-/home/deployer/spring-boot-crud-redis/
+/home/destroyer/spring-boot-crud-redis/
 ├── target/
 │   └── crud-redis-0.0.1-SNAPSHOT.jar
 ├── compose.yaml
@@ -360,7 +360,8 @@ For production deployment, consider:
 The systemd service is configured with:
 
 - `JAVA_OPTS`: `-Xmx512m -Xms256m` (adjust based on your server resources)
-- `SPRING_PROFILES_ACTIVE`: `production`
+- `SPRING_PROFILES_ACTIVE`: `dev` (uses Upstash Cloud Redis)
+- **Upstash Credentials**: Loaded from `/home/destroyer/spring-boot-crud-redis/.env`
 
 You can modify these in `/etc/systemd/system/spring-boot-crud-redis.service`
 
