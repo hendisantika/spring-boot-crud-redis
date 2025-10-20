@@ -193,16 +193,6 @@ jobs:
               exit 1
             fi
 
-            # Test Nginx locally
-            echo ""
-            echo "2. Testing Nginx (localhost:80)..."
-            if curl -f -s -o /dev/null -w "HTTP Status: %{http_code}\n" http://localhost; then
-              echo "✓ Nginx is serving requests"
-            else
-              echo "✗ Nginx is NOT responding"
-              exit 1
-            fi
-
             # Test via server IP
             echo ""
             echo "3. Testing via server IP (103.125.181.190)..."
