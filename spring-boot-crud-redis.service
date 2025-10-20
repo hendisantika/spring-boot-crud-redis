@@ -4,15 +4,15 @@ After=network.target
 
 [Service]
 Type=simple
-User=deployer
-WorkingDirectory=/home/deployer/spring-boot-crud-redis
-ExecStart=/usr/bin/java -jar /home/deployer/spring-boot-crud-redis/target/crud-redis-0.0.1.jar
+User=destroyer
+WorkingDirectory=/home/destroyer/spring-boot-crud-redis
+ExecStart=/home/destroyer/.sdkman/candidates/java/current/bin/java -jar /home/destroyer/spring-boot-crud-redis/target/crud-redis-0.0.1-SNAPSHOT.jar
 SuccessExitStatus=143
 Restart=always
 RestartSec=10
 
 # Load environment variables from .env file
-EnvironmentFile=/home/deployer/spring-boot-crud-redis/.env
+EnvironmentFile=/home/destroyer/spring-boot-crud-redis/.env
 
 # Environment variables
 Environment="JAVA_OPTS=-Xmx512m -Xms256m"
