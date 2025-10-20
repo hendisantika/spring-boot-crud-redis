@@ -27,7 +27,7 @@ You need to add the following **seven** secrets to your GitHub repository for th
 ### 2. SERVER_USERNAME
 
 - **Name**: `SERVER_USERNAME`
-- **Value**: `destroyer`
+- **Value**: `deployer`
 - **Description**: The SSH username used to connect to the server
 
 ### 3. SERVER_SSH_KEY
@@ -83,17 +83,17 @@ This creates two files:
 
 ```bash
 # Copy the public key to the server
-ssh-copy-id -i ~/.ssh/deploy_key.pub destroyer@103.125.181.190
+ssh-copy-id -i ~/.ssh/deploy_key.pub deployer@103.125.181.190
 
 # Or manually:
-cat ~/.ssh/deploy_key.pub | ssh destroyer@103.125.181.190 "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys && chmod 700 ~/.ssh && chmod 600 ~/.ssh/authorized_keys"
+cat ~/.ssh/deploy_key.pub | ssh deployer@103.125.181.190 "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys && chmod 700 ~/.ssh && chmod 600 ~/.ssh/authorized_keys"
 ```
 
 ### Step 3: Test SSH Key Authentication
 
 ```bash
 # Test the SSH connection with the private key
-ssh -i ~/.ssh/deploy_key destroyer@103.125.181.190
+ssh -i ~/.ssh/deploy_key deployer@103.125.181.190
 
 # If successful, you should be able to log in without a password
 ```
@@ -180,7 +180,7 @@ For better security, consider using SSH key authentication instead of passwords:
 
 - Check the Actions logs for detailed error messages
 - Verify the server is accessible: `ping 103.125.181.190`
-- Test SSH connection with key: `ssh -i ~/.ssh/deploy_key destroyer@103.125.181.190`
+- Test SSH connection with key: `ssh -i ~/.ssh/deploy_key deployer@103.125.181.190`
 - Ensure the public key is in `~/.ssh/authorized_keys` on the server
 - Check SSH key format is correct (should include BEGIN and END lines)
 
