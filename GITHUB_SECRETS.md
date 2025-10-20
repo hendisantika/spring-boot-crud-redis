@@ -6,6 +6,8 @@ This document describes the GitHub repository secrets required for automated dep
 
 You need to add the following **seven** secrets to your GitHub repository for the deployment workflow to work.
 
+⚠️ **Important**: This setup uses SSH key authentication (more secure) instead of password authentication.
+
 ### How to Add Secrets
 
 1. Go to your GitHub repository: https://github.com/hendisantika/spring-boot-crud-redis
@@ -28,11 +30,11 @@ You need to add the following **seven** secrets to your GitHub repository for th
 - **Value**: `destroyer`
 - **Description**: The SSH username used to connect to the server
 
-### 3. SERVER_PASSWORD
+### 3. SERVER_SSH_KEY
 
-- **Name**: `SERVER_PASSWORD`
-- **Value**: `Naruto2025!`
-- **Description**: The SSH password for authentication
+- **Name**: `SERVER_SSH_KEY`
+- **Value**: Your private SSH key content (see setup instructions below)
+- **Description**: SSH private key for authentication (more secure than password)
 
 ### 4. UPSTASH_ENDPOINT
 
@@ -58,10 +60,69 @@ You need to add the following **seven** secrets to your GitHub repository for th
 - **Value**: `UPSTASH_PASSWORD`
 - **Description**: Upstash Redis password
 
+## SSH Key Setup Instructions
+
+Before adding the `SERVER_SSH_KEY` secret, you need to generate and configure SSH keys:
+
+### Step 1: Generate SSH Key Pair (on your local machine)
+
+```bash
+# Generate a new ED25519 SSH key (recommended)
+ssh-keygen -t ed25519 -C "github-actions-deploy" -f ~/.ssh/deploy_key -N ""
+
+# Or use RSA if ED25519 is not supported
+ssh-keygen -t rsa -b 4096 -C "github-actions-deploy" -f ~/.ssh/deploy_key -N ""
+```
+
+This creates two files:
+
+- `~/.ssh/deploy_key` - **Private key** (add to GitHub Secrets)
+- `~/.ssh/deploy_key.pub` - **Public key** (add to server)
+
+### Step 2: Add Public Key to Server
+
+```bash
+# Copy the public key to the server
+ssh-copy-id -i ~/.ssh/deploy_key.pub destroyer@103.125.181.190
+
+# Or manually:
+cat ~/.ssh/deploy_key.pub | ssh destroyer@103.125.181.190 "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys && chmod 700 ~/.ssh && chmod 600 ~/.ssh/authorized_keys"
+```
+
+### Step 3: Test SSH Key Authentication
+
+```bash
+# Test the SSH connection with the private key
+ssh -i ~/.ssh/deploy_key destroyer@103.125.181.190
+
+# If successful, you should be able to log in without a password
+```
+
+### Step 4: Add Private Key to GitHub Secrets
+
+```bash
+# Display the private key (copy this entire output)
+cat ~/.ssh/deploy_key
+```
+
+Copy the entire output including the header and footer:
+
+```
+-----BEGIN OPENSSH PRIVATE KEY-----
+...key content...
+-----END OPENSSH PRIVATE KEY-----
+```
+
+Then add it as `SERVER_SSH_KEY` secret in GitHub.
+
 ## Security Note
 
-⚠️ **Important**: Never commit secrets to your repository. Always use GitHub Secrets for sensitive information like
-passwords and API keys.
+⚠️ **Important**:
+
+- Never commit secrets or private keys to your repository
+- Always use GitHub Secrets for sensitive information
+- SSH key authentication is more secure than password authentication
+- Keep your private key safe and never share it
 
 ## Verification
 
@@ -70,7 +131,7 @@ After adding all seven secrets, you should see them listed in the repository sec
 ```
 SERVER_HOST          Updated [date]
 SERVER_USERNAME      Updated [date]
-SERVER_PASSWORD      Updated [date]
+SERVER_SSH_KEY       Updated [date]
 UPSTASH_ENDPOINT     Updated [date]
 UPSTASH_PORT         Updated [date]
 UPSTASH_USERNAME     Updated [date]
@@ -119,7 +180,16 @@ For better security, consider using SSH key authentication instead of passwords:
 
 - Check the Actions logs for detailed error messages
 - Verify the server is accessible: `ping 103.125.181.190`
-- Test SSH connection manually: `ssh destroyer@103.125.181.190`
+- Test SSH connection with key: `ssh -i ~/.ssh/deploy_key destroyer@103.125.181.190`
+- Ensure the public key is in `~/.ssh/authorized_keys` on the server
+- Check SSH key format is correct (should include BEGIN and END lines)
+
+## Benefits of SSH Key Authentication
+
+✅ **More Secure**: Keys are cryptographically stronger than passwords
+✅ **No Password Exposure**: Private key never leaves your machine/GitHub Secrets
+✅ **Better Access Control**: Can easily revoke keys without changing passwords
+✅ **Industry Standard**: Recommended for automated deployments
 
 ## Related Files
 

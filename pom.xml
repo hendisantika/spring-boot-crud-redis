@@ -10,7 +10,7 @@
     </parent>
     <groupId>id.my.hendisantika</groupId>
     <artifactId>crud-redis</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>spring-boot-crud-redis</name>
     <description>Spring Boot CRUD Application with Redis, Thymeleaf, and SweetAlert2 - A modern product management
         system

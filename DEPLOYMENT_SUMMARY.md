@@ -19,18 +19,21 @@ Since you're using **Upstash Cloud Redis**, the deployment has been optimized to
 
 You need to add **7 secrets** to your GitHub repository:
 
-### Server Credentials
+### Server Credentials (SSH Key Authentication)
 
 1. `SERVER_HOST` = `103.125.181.190`
 2. `SERVER_USERNAME` = `destroyer`
-3. `SERVER_PASSWORD` = `Naruto2025!`
+3. `SERVER_SSH_KEY` = Your SSH private key content
+
+⚠️ **Important**: Generate SSH keys and add public key to server before deployment. See `GITHUB_SECRETS.md` for detailed
+instructions.
 
 ### Upstash Redis Credentials
 
-4. `UPSTASH_ENDPOINT` = `UPSTASH_ENDPOINT`
+4. `UPSTASH_ENDPOINT` = `UPSTASH_ENDPOINT-muskrat-23212.upstash.io`
 5. `UPSTASH_PORT` = `6379`
 6. `UPSTASH_USERNAME` = `default`
-7. `UPSTASH_ENDPOINT` = `UPSTASH_ENDPOINT`
+7. `UPSTASH_PASSWORD` = `UPSTASH_PASSWORD`
 
 ## 📋 Deployment Flow
 
@@ -60,9 +63,11 @@ You need to add **7 secrets** to your GitHub repository:
 
 ### Security Improvements
 
+- ✅ **SSH Key Authentication**: More secure than password-based auth
 - ✅ Credentials stored in GitHub Secrets (not in repository)
 - ✅ `.env` file created dynamically on server
 - ✅ File permissions set to 600 (owner-only access)
+- ✅ Private key never exposed during deployment
 
 ### Simplified Deployment
 
@@ -71,12 +76,33 @@ You need to add **7 secrets** to your GitHub repository:
 - ✅ Less files to transfer
 - ✅ Cloud-native approach
 
-## 📝 How to Add GitHub Secrets
+## 📝 Setup Instructions
+
+### 1. Generate SSH Key Pair
+
+```bash
+# Generate SSH key
+ssh-keygen -t ed25519 -C "github-actions-deploy" -f ~/.ssh/deploy_key -N ""
+
+# Add public key to server
+ssh-copy-id -i ~/.ssh/deploy_key.pub destroyer@103.125.181.190
+
+# Test connection
+ssh -i ~/.ssh/deploy_key destroyer@103.125.181.190
+```
+
+### 2. Add GitHub Secrets
 
 1. Go to: https://github.com/hendisantika/spring-boot-crud-redis
 2. Click: **Settings** → **Secrets and variables** → **Actions**
 3. Click: **New repository secret**
 4. Add each of the 7 secrets listed above
+
+For `SERVER_SSH_KEY`, copy the entire private key:
+
+```bash
+cat ~/.ssh/deploy_key
+```
 
 ## 🚀 Deploy Your Application
 
