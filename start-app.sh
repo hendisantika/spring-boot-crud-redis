@@ -21,4 +21,4 @@ cd /home/deployer/spring-boot-crud-redis
 # Start the application
 exec java ${JAVA_OPTS:--Xmx512m -Xms256m} \
     -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE:-dev} \
-    -jar /home/deployer/spring-boot-crud-redis/crud-redis-0.0.1.jar
+    -jar /home/deployer/spring-boot-crud-redis/target/crud-redis-0.0.1.jar
