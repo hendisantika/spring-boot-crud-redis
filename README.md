@@ -17,6 +17,20 @@ responsive user interface.
 - **Docker Support**: Easy Redis deployment using Docker Compose with UI tools
 - **Stock Management**: Visual indicators for product quantity (In Stock, Low Stock, Out of Stock)
 
+### Image Screen shot
+
+List Products
+
+![List Products](img/list.png "List Products")
+
+Product Management
+
+![Product Management](img/Product-Management.png "Product Management")
+
+Add New Product
+
+![Add New Product](img/add.png "Add New Product")
+
 ## Technologies Used
 
 ### Backend
