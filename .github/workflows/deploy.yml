@@ -1,0 +1,63 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn clean package -DskipTests
+
+      - name: Deploy to Server via SSH
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: 22
+          source: "target/crud-redis-0.0.1-SNAPSHOT.jar,.env,compose.yaml"
+          target: "/home/${{ secrets.SERVER_USERNAME }}/spring-boot-crud-redis"
+          strip_components: 0
+
+      - name: Execute deployment script
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: 22
+          script: |
+            cd /home/${{ secrets.SERVER_USERNAME }}/spring-boot-crud-redis
+            
+            # Stop the existing application
+            sudo systemctl stop spring-boot-crud-redis || true
+            
+            # Update systemd service
+            sudo cp /home/${{ secrets.SERVER_USERNAME }}/spring-boot-crud-redis/spring-boot-crud-redis.service /etc/systemd/system/
+            sudo systemctl daemon-reload
+            
+            # Start the application (using dev profile with Upstash Cloud Redis)
+            sudo systemctl enable spring-boot-crud-redis
+            sudo systemctl start spring-boot-crud-redis
+            
+            # Check status
+            sleep 5
+            sudo systemctl status spring-boot-crud-redis --no-pager
+            
+            # Show recent logs
+            sudo journalctl -u spring-boot-crud-redis -n 20 --no-pager
