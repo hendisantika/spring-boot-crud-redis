@@ -2,6 +2,7 @@ package id.my.hendisantika.crudredis;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Created by IntelliJ IDEA.
@@ -15,9 +16,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * To change this template use File | Settings | File Templates.
  */
 @SpringBootApplication
+@EnableScheduling
 public class SpringBootCrudRedisApplication {
 
-    static void main(String[] args) {
+    public static void main(String[] args) {
         SpringApplication.run(SpringBootCrudRedisApplication.class, args);
     }
 
