@@ -196,7 +196,7 @@ jobs:
             # Test via server IP
             echo ""
             echo "3. Testing via server IP (103.125.181.190)..."
-            if curl -f -s -o /dev/null -w "HTTP Status: %{http_code}\n" http://103.125.181.190; then
+            if curl -f -s -o /dev/null -w "HTTP Status: %{http_code}\n" http://103.125.181.190:8080; then
               echo "✓ Server is accessible via IP"
             else
               echo "✗ Server is NOT accessible via IP"
@@ -206,7 +206,7 @@ jobs:
             # Test domain (if DNS is configured)
             echo ""
             echo "4. Testing domain (redis-demo.jvm.my.id)..."
-            if curl -f -s -o /dev/null -w "HTTP Status: %{http_code}\n" http://redis-demo.jvm.my.id 2>/dev/null; then
+            if curl -f -s -o /dev/null -w "HTTP Status: %{http_code}\n" https://redis-demo.jvm.my.id 2>/dev/null; then
               echo "✓ Domain is serving requests"
             else
               echo "⚠ Domain might not be configured yet (this is OK if Cloudflare DNS is not set)"
