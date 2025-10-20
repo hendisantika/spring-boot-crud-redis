@@ -23,14 +23,14 @@ jobs:
       - name: Build with Maven
         run: mvn clean package -DskipTests
 
-      - name: Deploy JAR, Service, and Nginx Config to Server
+      - name: Deploy JAR, Service, Startup Script, and Nginx Config to Server
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
-          source: "target/crud-redis-0.0.1-SNAPSHOT.jar,spring-boot-crud-redis.service,nginx/"
+          source: "target/crud-redis-0.0.1-SNAPSHOT.jar,spring-boot-crud-redis.service,start-app.sh,nginx/"
           target: "/home/${{ secrets.SERVER_USERNAME }}/spring-boot-crud-redis"
           strip_components: 0
 
@@ -54,6 +54,9 @@ jobs:
 
             # Set proper permissions for .env file
             chmod 600 .env
+
+            # Make startup script executable
+            chmod +x start-app.sh
 
             # Stop the existing application
             sudo systemctl stop spring-boot-crud-redis || true

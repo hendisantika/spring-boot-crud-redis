@@ -6,17 +6,10 @@ After=network.target
 Type=simple
 User=destroyer
 WorkingDirectory=/home/destroyer/spring-boot-crud-redis
-ExecStart=/home/destroyer/.sdkman/candidates/java/current/bin/java -jar /home/destroyer/spring-boot-crud-redis/target/crud-redis-0.0.1-SNAPSHOT.jar
+ExecStart=/home/destroyer/spring-boot-crud-redis/start-app.sh
 SuccessExitStatus=143
 Restart=always
 RestartSec=10
-
-# Load environment variables from .env file
-EnvironmentFile=/home/destroyer/spring-boot-crud-redis/.env
-
-# Environment variables
-Environment="JAVA_OPTS=-Xmx512m -Xms256m"
-Environment="SPRING_PROFILES_ACTIVE=dev"
 
 # Logging
 StandardOutput=journal
