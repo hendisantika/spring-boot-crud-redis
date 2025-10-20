@@ -4,7 +4,7 @@ This document describes the GitHub repository secrets required for automated dep
 
 ## Required Secrets
 
-You need to add the following three secrets to your GitHub repository for the deployment workflow to work.
+You need to add the following **seven** secrets to your GitHub repository for the deployment workflow to work.
 
 ### How to Add Secrets
 
@@ -34,6 +34,30 @@ You need to add the following three secrets to your GitHub repository for the de
 - **Value**: `Naruto2025!`
 - **Description**: The SSH password for authentication
 
+### 4. UPSTASH_ENDPOINT
+
+- **Name**: `UPSTASH_ENDPOINT`
+- **Value**: `UPSTASH_ENDPOINT`
+- **Description**: Upstash Redis cloud endpoint
+
+### 5. UPSTASH_PORT
+
+- **Name**: `UPSTASH_PORT`
+- **Value**: `6379`
+- **Description**: Upstash Redis port
+
+### 6. UPSTASH_USERNAME
+
+- **Name**: `UPSTASH_USERNAME`
+- **Value**: `default`
+- **Description**: Upstash Redis username
+
+### 7. UPSTASH_PASSWORD
+
+- **Name**: `UPSTASH_PASSWORD`
+- **Value**: `UPSTASH_PASSWORD`
+- **Description**: Upstash Redis password
+
 ## Security Note
 
 ⚠️ **Important**: Never commit secrets to your repository. Always use GitHub Secrets for sensitive information like
@@ -41,12 +65,16 @@ passwords and API keys.
 
 ## Verification
 
-After adding all three secrets, you should see them listed in the repository secrets page:
+After adding all seven secrets, you should see them listed in the repository secrets page:
 
 ```
 SERVER_HOST          Updated [date]
 SERVER_USERNAME      Updated [date]
 SERVER_PASSWORD      Updated [date]
+UPSTASH_ENDPOINT     Updated [date]
+UPSTASH_PORT         Updated [date]
+UPSTASH_USERNAME     Updated [date]
+UPSTASH_PASSWORD     Updated [date]
 ```
 
 ## Testing the Deployment

@@ -130,6 +130,7 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                    <mainClass>id.my.hendisantika.crudredis.SpringBootCrudRedisApplication</mainClass>
                 </configuration>
             </plugin>
         </plugins>
