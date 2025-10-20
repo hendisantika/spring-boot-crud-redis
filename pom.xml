@@ -49,6 +49,7 @@
     </scm>
     <properties>
         <java.version>25</java.version>
+        <start-class>id.my.hendisantika.crudredis.SpringBootCrudRedisApplication</start-class>
     </properties>
     <dependencies>
         <dependency>
