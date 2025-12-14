@@ -48,10 +48,10 @@ public class ProductScheduler {
     };
 
     /**
-     * Scheduled task that runs every 5 seconds (5000 milliseconds)
+     * Scheduled task that runs every 30 minutes (1800000 milliseconds)
      * Creates a new random product and saves it to Redis
      */
-    @Scheduled(fixedRate = 300000)
+    @Scheduled(fixedRate = 1800000)
     public void createProductAutomatically() {
         try {
             // Generate random product data
