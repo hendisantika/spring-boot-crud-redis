@@ -14,11 +14,10 @@ echo "Updating system packages..."
 sudo apt update
 sudo apt upgrade -y
 
-# Install Java 25 (or use Java 21 as fallback if 25 is not available)
+# Install Java 25 (required by the application)
 echo "Installing Java..."
 if ! command -v java &> /dev/null; then
-    # Try to install Java 25 (might not be available in all repos)
-    sudo apt install -y openjdk-21-jdk || sudo apt install -y openjdk-17-jdk
+    sudo apt install -y openjdk-25-jdk
 fi
 
 # Verify Java installation
