@@ -1,5 +1,10 @@
 # Spring Boot CRUD with Redis - Product Management System
 
+[![CI](https://github.com/hendisantika/spring-boot-crud-redis/actions/workflows/ci.yml/badge.svg)](https://github.com/hendisantika/spring-boot-crud-redis/actions/workflows/ci.yml)
+[![Deploy to Server](https://github.com/hendisantika/spring-boot-crud-redis/actions/workflows/deploy.yml/badge.svg)](https://github.com/hendisantika/spring-boot-crud-redis/actions/workflows/deploy.yml)
+![Java](https://img.shields.io/badge/Java-25-orange?logo=openjdk)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.1-brightgreen?logo=springboot)
+
 A modern, full-featured product management web application built with Spring Boot, Redis, Thymeleaf, and SweetAlert2.
 This application demonstrates how to implement CRUD operations using Redis as the primary data store with a beautiful,
 responsive user interface.
@@ -35,8 +40,8 @@ Add New Product
 
 ### Backend
 
-- **Java 25**
-- **Spring Boot 3.5.6**
+- **Java 25** (LTS)
+- **Spring Boot 4.1.1**
     - Spring Boot Starter Web
     - Spring Boot Starter Data Redis
     - Spring Boot Starter Thymeleaf
@@ -45,6 +50,7 @@ Add New Product
     - Spring Boot Docker Compose Support
 - **Redis 7 (Alpine)**
 - **Jedis** - Redis Java Client
+- **Jackson 3** - JSON serialization for Redis values
 - **Lombok** - Reduce boilerplate code
 
 ### Frontend
@@ -61,6 +67,7 @@ Add New Product
 - **RedisInsight** - Official Redis GUI for data visualization and management
 - **Redis Commander** - Lightweight web-based Redis management tool
 - **Maven** - Build and dependency management
+- **GitHub Actions** - CI (build & test on JDK 25) and automated deployment
 
 ## Prerequisites
 
@@ -362,7 +369,7 @@ The application uses Spring Data Redis with the following configuration:
 - **Key Pattern**: `Product:{id}`
 - **Serialization**:
     - Keys: StringRedisSerializer
-    - Values: GenericJackson2JsonRedisSerializer
+    - Values: GenericJacksonJsonRedisSerializer (Jackson 3)
 - **Data Type**: Redis Hash
 - **Persistence**: AOF (Append-Only File) enabled
 
@@ -541,11 +548,20 @@ FLUSHALL
 
 ## Testing
 
-Run the test suite:
+Run the test suite (requires Redis running on `localhost:6379`, e.g. `docker compose up -d redis`):
 
 ```bash
 ./mvnw test
 ```
+
+## Continuous Integration
+
+GitHub Actions runs two workflows on every push to `main`:
+
+| Workflow                                         | Purpose                                                                    |
+|--------------------------------------------------|----------------------------------------------------------------------------|
+| [`ci.yml`](.github/workflows/ci.yml)             | Builds and runs the full test suite on JDK 25 (Temurin) against a Redis 7 service container. Also runs on pull requests. |
+| [`deploy.yml`](.github/workflows/deploy.yml)     | Builds the JAR on JDK 25 and deploys it to the server over SSH.            |
 
 ## Building for Production
 
@@ -555,7 +571,7 @@ Run the test suite:
 ./mvnw clean package -DskipTests
 ```
 
-The JAR file will be created in `target/crud-redis-0.0.1-SNAPSHOT.jar`
+The JAR file will be created in `target/crud-redis-0.0.1.jar`
 
 ### Production Configuration
 
