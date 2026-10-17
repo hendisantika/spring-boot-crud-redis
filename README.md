@@ -1,7 +1,6 @@
 # Spring Boot CRUD with Redis - Product Management System
 
-[![CI](https://github.com/hendisantika/spring-boot-crud-redis/actions/workflows/ci.yml/badge.svg)](https://github.com/hendisantika/spring-boot-crud-redis/actions/workflows/ci.yml)
-[![Deploy to Server](https://github.com/hendisantika/spring-boot-crud-redis/actions/workflows/deploy.yml/badge.svg)](https://github.com/hendisantika/spring-boot-crud-redis/actions/workflows/deploy.yml)
+[![CI/CD](https://github.com/hendisantika/spring-boot-crud-redis/actions/workflows/deploy.yml/badge.svg)](https://github.com/hendisantika/spring-boot-crud-redis/actions/workflows/deploy.yml)
 ![Java](https://img.shields.io/badge/Java-25-orange?logo=openjdk)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.1-brightgreen?logo=springboot)
 
@@ -67,7 +66,7 @@ Add New Product
 - **RedisInsight** - Official Redis GUI for data visualization and management
 - **Redis Commander** - Lightweight web-based Redis management tool
 - **Maven** - Build and dependency management
-- **GitHub Actions** - CI (build & test on JDK 25) and automated deployment
+- **GitHub Actions** - CI/CD pipeline (build & test on JDK 25, then deploy)
 
 ## Prerequisites
 
@@ -556,12 +555,12 @@ Run the test suite (requires Redis running on `localhost:6379`, e.g. `docker com
 
 ## Continuous Integration
 
-GitHub Actions runs two workflows on every push to `main`:
+A single GitHub Actions workflow, [`deploy.yml`](.github/workflows/deploy.yml) (**CI/CD**), has two jobs:
 
-| Workflow                                         | Purpose                                                                    |
-|--------------------------------------------------|----------------------------------------------------------------------------|
-| [`ci.yml`](.github/workflows/ci.yml)             | Builds and runs the full test suite on JDK 25 (Temurin) against a Redis 7 service container. Also runs on pull requests. |
-| [`deploy.yml`](.github/workflows/deploy.yml)     | Builds the JAR on JDK 25 and deploys it to the server over SSH.            |
+| Job      | Runs on                         | Purpose                                                                                      |
+|----------|---------------------------------|----------------------------------------------------------------------------------------------|
+| `build`  | Push to `main` and pull requests | Builds and runs the full test suite on JDK 25 (Temurin) against a Redis 7 service container, then uploads the JAR. |
+| `deploy` | Push to `main` (after `build`)  | Deploys the tested JAR, systemd service and Nginx config to the server over SSH.              |
 
 ## Building for Production
 
